@@ -158,7 +158,7 @@ describe('SignUp Controller', () => {
     const httpRequest = {
       body: {
         name: 'any_name',
-        email: 'valid_email@mail.com',
+        email: 'any_email@mail.com',
         password: 'any_password',
         confirmPassword: 'any_password'
       }
@@ -185,5 +185,23 @@ describe('SignUp Controller', () => {
       email: 'valid_email@mail.com',
       password: 'valid_password'
     })
+  })
+
+  test('Should return 500 if AddAccount throws', async () => {
+    const { sut, addAccountStub } = makeSut()
+    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(() => {
+      throw new Error()
+    })
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'any_password'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual('Internal server error')
   })
 })
